@@ -1,4 +1,4 @@
-# ZMK Dongle Screen YADS (Yet another Dongle Screen)
+# ZMK Dongle Screen
 
 This project provides a Zephyr module for a dongle display shield based on the ST7789V display and the Seeeduino XAIO BLE microcontroller and the LVGL graphics library.  
 The display can take advantage of a ambient light sensor to dim and brighten the display automatically.  
@@ -36,18 +36,18 @@ This repository only contains a module and no build guides or suggestions.
 This module provides several widgets to visualize the current state of your ZMK-based keyboard:
 
 - **Output Widget**  
-  Indicates the current output state of the keyboard (USB or BLE profiles). The currently used interface (USB or BLE) is indicated with an arrow.
+  Indicates the current output state of the keyboard (USB or BLE profiles). The currently used interface (USB or BLE) is indicated with an icon.
   - **USB:**
-    - **White:** USB HID is ready and active (dongle is connected to a computer and working as a keyboard).
+    - **Orange:** USB HID is ready and active (dongle is connected to a computer and working as a keyboard).
     - **Red:** USB HID is not ready (dongle is powered, e.g. via wall plug or power bank, but not connected to a computer).
   - **BLE:**  
-    For the currently selected Bluetooth profile (the number is shown in the next line):
+    For the currently selected Bluetooth profile:
     - **Green:** Connected (active BLE connection established)
     - **Blue:** Bonded (device is paired, but not currently connected)
     - **White:** Profile is free (no device paired or connected for this profile)
 
 - **Layer Widget**  
-  Displays the currently active keyboard layer. Useful for quickly identifying which layer is active.
+  Displays the currently active keyboard layer. Useful for quickly identifying which layer is active.  There is example customization on how to color code layer names as well.  In my example I have an "Orange" and "Greeen" layer, so I set text colors accordingly.
 
 - **Mod Widget**  
   Shows the status of modifier keys (e.g., Shift, Ctrl, Alt, GUI). Indicates which modifiers are currently pressed.
@@ -57,6 +57,11 @@ This module provides several widgets to visualize the current state of your ZMK-
 
 - **Battery Widget**  
   Shows the battery level of the dongle and/or the keyboard, if supported.
+
+- **Lock status Widget**
+  Shows the current status of the three lock states; CAPS LOCK, NUM LOCK, and SCROOL LOCK.
+    - **Dark grey:** indicates the state is not active
+    - **Blue:** indicates the state is active.
 
 ## General Features
 
