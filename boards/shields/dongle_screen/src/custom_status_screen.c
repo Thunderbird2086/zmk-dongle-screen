@@ -63,12 +63,10 @@ lv_obj_t *zmk_display_status_screen()
     lv_style_set_text_line_space(&global_style, 1);
     lv_obj_add_style(screen, &global_style, LV_PART_MAIN);
 
-/*
 #if CONFIG_DONGLE_SCREEN_LAYER_ACTIVE
     zmk_widget_layer_status_init(&layer_status_widget, screen);
     lv_obj_align(zmk_widget_layer_status_obj(&layer_status_widget), LV_ALIGN_LEFT_MID, 20, -10);
 #endif
-*/
 
 #if CONFIG_DONGLE_SCREEN_HID_INDICATORS_ACTIVE
     zmk_widget_hid_indicators_init(&hid_indicators_widget, screen);

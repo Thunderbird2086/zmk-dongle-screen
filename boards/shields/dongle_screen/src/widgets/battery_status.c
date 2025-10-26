@@ -91,9 +91,10 @@ static void event_cb(lv_event_t *e)
 
     /* ✅ Correct way to get draw context */
     lv_draw_ctx_t draw_ctx;
-    lv_draw_task_get_draw_ctx(draw_task);
-
-    if (!draw_task_area || !draw_ctx) return;
+    // NEW (check LVGL 9+ API):
+    // Access draw context directly from draw_task if available
+    lv_draw_ctx_t *draw_ctx = lv_draw_task_get_draw_ctx(draw_task);
+    if (!draw_ctx) return;
 
     lv_draw_label(draw_ctx, &dsc, draw_task_area, buf, NULL);
 }
