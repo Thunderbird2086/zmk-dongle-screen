@@ -55,6 +55,7 @@ config LV_COLOR_16_SWAP
 	default y
 
 config LV_DISP_DEF_REFR_PERIOD
+    int "Display refresh period"
     default 33
 
 choice LV_FONT_DEFAULT
