@@ -4,13 +4,14 @@
 
 #define BRIGHTNESS_STATUS_HIDE_DELAY_MS 500
 
-static void brightness_status_timer_cb(lv_timer_t *timer)
+static struct k_timer brightness_status_timer;
+
+static void brightness_status_timer_cb(struct k_timer *timer)
 {
-    struct zmk_widget_brightness_status *widget = (struct zmk_widget_brightness_status *)timer->user_data;
+    struct zmk_widget_brightness_status *widget = k_timer_user_data_get(timer);
     if (widget && widget->obj) {
         lv_obj_add_flag(widget->obj, LV_OBJ_FLAG_HIDDEN);
     }
-    lv_timer_del(timer); // Clean up the timer after use
 }
 
 int zmk_widget_update_brightness_status(struct zmk_widget_brightness_status *widget, uint8_t brightness)
@@ -22,9 +23,9 @@ int zmk_widget_update_brightness_status(struct zmk_widget_brightness_status *wid
     // Unhide the widget
     lv_obj_clear_flag(widget->obj, LV_OBJ_FLAG_HIDDEN);
 
-    // Start a one-shot timer to hide the widget after 300ms
-    lv_timer_t *timer = lv_timer_create(brightness_status_timer_cb, BRIGHTNESS_STATUS_HIDE_DELAY_MS, widget);
-    lv_timer_set_repeat_count(timer, 1);
+    // One-shot style: restart the timer to hide the widget after the delay
+    k_timer_user_data_set(&brightness_status_timer, widget);
+    k_timer_start(&brightness_status_timer, K_MSEC(BRIGHTNESS_STATUS_HIDE_DELAY_MS), K_FOREVER);
 
     return 0;
 }
@@ -40,7 +41,9 @@ int zmk_widget_brightness_status_init(struct zmk_widget_brightness_status *widge
     lv_obj_align(widget->label, LV_ALIGN_CENTER, 0, 0);
     lv_label_set_text(widget->label, "");
     lv_obj_set_style_text_font(widget->label, &lv_font_montserrat_40, 0);
-    
+
+    k_timer_init(&brightness_status_timer, brightness_status_timer_cb, NULL);
+
     lv_obj_add_flag(widget->obj, LV_OBJ_FLAG_HIDDEN);
     return 0;
 }

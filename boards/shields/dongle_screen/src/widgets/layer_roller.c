@@ -93,58 +93,6 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_roller, struct layer_roller_state, laye
                             layer_roller_get_state)
 ZMK_SUBSCRIPTION(widget_layer_roller, zmk_layer_state_changed);
 
-static void mask_event_cb(lv_event_t * e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t * obj = lv_event_get_target(e);
-
-    static int16_t mask_top_id = -1;
-    static int16_t mask_bottom_id = -1;
-
-    if(code == LV_EVENT_COVER_CHECK) {
-        lv_event_set_cover_res(e, LV_COVER_RES_MASKED);
-
-    }
-    else if(code == LV_EVENT_DRAW_MAIN_BEGIN) {
-        /* add mask */
-        const lv_font_t * font = lv_obj_get_style_text_font(obj, LV_PART_SELECTED);
-        lv_coord_t line_space = lv_obj_get_style_text_line_space(obj, LV_PART_MAIN);
-        lv_coord_t font_h = lv_font_get_line_height(font);
-
-        lv_area_t roller_coords;
-        lv_obj_get_coords(obj, &roller_coords);
-
-        lv_area_t rect_area;
-        rect_area.x1 = roller_coords.x1;
-        rect_area.x2 = roller_coords.x2;
-        rect_area.y1 = roller_coords.y1;
-        // rect_area.y2 = roller_coords.y1 + (lv_obj_get_height(obj) - font_h - line_space) / 2;
-        rect_area.y2 = roller_coords.y1 + (lv_obj_get_height(obj) - font_h) / 2;
-
-        lv_draw_mask_fade_param_t * fade_mask_top = lv_mem_buf_get(sizeof(lv_draw_mask_fade_param_t));
-        lv_draw_mask_fade_init(fade_mask_top, &rect_area, LV_OPA_TRANSP, rect_area.y1, LV_OPA_COVER, rect_area.y2);
-        mask_top_id = lv_draw_mask_add(fade_mask_top, NULL);
-
-        rect_area.y1 = rect_area.y2 + font_h + line_space - 1;
-        rect_area.y2 = roller_coords.y2;
-
-        lv_draw_mask_fade_param_t * fade_mask_bottom = lv_mem_buf_get(sizeof(lv_draw_mask_fade_param_t));
-        lv_draw_mask_fade_init(fade_mask_bottom, &rect_area, LV_OPA_COVER, rect_area.y1, LV_OPA_TRANSP, rect_area.y2);
-        mask_bottom_id = lv_draw_mask_add(fade_mask_bottom, NULL);
-
-    }
-    else if(code == LV_EVENT_DRAW_POST_END) {
-        lv_draw_mask_fade_param_t * fade_mask_top = lv_draw_mask_remove_id(mask_top_id);
-        lv_draw_mask_fade_param_t * fade_mask_bottom = lv_draw_mask_remove_id(mask_bottom_id);
-        lv_draw_mask_free_param(fade_mask_top);
-        lv_draw_mask_free_param(fade_mask_bottom);
-        lv_mem_buf_release(fade_mask_top);
-        lv_mem_buf_release(fade_mask_bottom);
-        mask_top_id = -1;
-        mask_bottom_id = -1;
-    }
-}
-
 static void init_layer_arrays(void) {
     static bool initialized = false;
     if (initialized) {
@@ -264,9 +212,7 @@ int zmk_widget_layer_roller_init(struct zmk_widget_layer_roller *widget, lv_obj_
 
     lv_roller_set_options(widget->obj, layer_names_buffer, LV_ROLLER_MODE_NORMAL);
     lv_roller_set_visible_row_count(widget->obj, 3);
-    
-    //lv_obj_add_event_cb(widget->obj, mask_event_cb, LV_EVENT_ALL, NULL);
-    
+
     lv_obj_set_style_anim_time(widget->obj, 400, 0);
     
     sys_slist_append(&widgets, &widget->node);
