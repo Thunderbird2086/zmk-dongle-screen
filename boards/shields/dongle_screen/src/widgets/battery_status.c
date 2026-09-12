@@ -74,6 +74,7 @@ static void event_cb(lv_event_t *e)
     lv_draw_task_t *draw_task = lv_event_get_draw_task(e);
     if (!draw_task) return;
 
+    /* 1. Check Draw Task Descriptor */
     lv_draw_dsc_base_t *base = lv_draw_task_get_draw_dsc(draw_task);
     if (!base || base->part != LV_PART_INDICATOR) return;
 
@@ -84,21 +85,17 @@ static void event_cb(lv_event_t *e)
 
     lv_draw_label_dsc_t dsc;
     lv_draw_label_dsc_init(&dsc);
+    dsc.text = buf;
 
-    /* ✅ Correct way to get draw area */
-    lv_area_t draw_task_area;
-    lv_draw_task_get_area(draw_task, &draw_task_area);
+    /* LVGL v9: get layer from an event and call rendering */
+    lv_layer_t *layer = lv_event_get_layer(e);
 
-    /* ✅ Correct way to get draw context */
-    lv_draw_ctx_t draw_ctx;
-    // NEW (check LVGL 9+ API):
-    // Access draw context directly from draw_task if available
-    lv_draw_ctx_t *draw_ctx = lv_draw_task_get_draw_ctx(draw_task);
-    if (!draw_ctx) return;
+    lv_area_t draw_area;
+    lv_draw_task_get_area(draw_task, &draw_area);
 
-    lv_draw_label(draw_ctx, &dsc, draw_task_area, buf, NULL);
+    /* render the text on the layer */
+    lv_draw_label(layer, &dsc, &draw_area);
 }
-
 /* Helper for battery color */
 static lv_color_t get_battery_color(uint8_t level) {
     if (level <= 10) return lv_palette_main(LV_PALETTE_RED);
@@ -221,7 +218,7 @@ int zmk_widget_dongle_battery_status_init(
 
         lv_obj_remove_style_all(bar);
         lv_obj_add_style(bar, &style_bg, LV_PART_MAIN);
-        lv_obj_add_style(bar, &style_indIc, LV_PART_INDICATOR);
+        lv_obj_add_style(bar, &style_indic, LV_PART_INDICATOR);
 
         lv_obj_set_size(bar, BATT_BAR_LENGTH, BATT_BAR_HEIGHT);
         lv_bar_set_range(bar, BATT_BAR_MIN, BATT_BAR_MAX);
