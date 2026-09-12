@@ -93,6 +93,7 @@ ZMK_DISPLAY_WIDGET_LISTENER(widget_layer_roller, struct layer_roller_state, laye
                             layer_roller_get_state)
 ZMK_SUBSCRIPTION(widget_layer_roller, zmk_layer_state_changed);
 
+#if 0
 static void mask_event_cb(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -144,6 +145,7 @@ static void mask_event_cb(lv_event_t * e)
         mask_bottom_id = -1;
     }
 }
+#endif
 
 static void init_layer_arrays(void) {
     static bool initialized = false;
